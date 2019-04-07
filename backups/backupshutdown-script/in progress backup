@@ -1,0 +1,54 @@
+
+    :powerSelectShutdown
+      cls
+      echo Shutdown in how long? [Seconds]
+      echo.
+      set shutdownTimer=
+      set /P shutdownTimer=Type input: %=%
+
+      SET "var="&for /f "delims=0123456789" %%i in ("%shutdownTimer%") do set var=%%i
+      if defined var (
+      cls
+      echo "%shutdownTimer%" is not a number
+      timeout /T 3 /nobreak
+      goto :powerSelectShutdown
+      ) else (
+      timeout /t %shutdownTimer% /nobreak
+      :: Replace timeout with shutdown /s /t %shutdownTimer%)
+    goto :endScript
+
+    :powerSelectHibernate
+      cls
+      echo Hibernate in how long? [Seconds]
+      echo.
+      set shutdownTimer=
+      set /P shutdownTimer=Type input: %=%
+
+      SET "var="&for /f "delims=0123456789" %%i in ("%shutdownTimer%") do set var=%%i
+      if defined var (
+      cls
+      echo "%shutdownTimer%" is not a number
+      timeout /T 3 /nobreak
+      goto :powerSelectShutdown
+      ) else (
+      timeout /t %shutdownTimer% /nobreak
+      :: Replace timeout with shutdown /h /t %shutdownTimer%)
+    goto :endScript
+
+    :powerSelectHibernate
+      cls
+      echo Restart in how long? [Seconds]
+      echo.
+      set shutdownTimer=
+      set /P shutdownTimer=Type input: %=%
+
+      SET "var="&for /f "delims=0123456789" %%i in ("%shutdownTimer%") do set var=%%i
+      if defined var (
+      cls
+      echo "%shutdownTimer%" is not a number
+      timeout /T 3 /nobreak
+      goto :powerSelectShutdown
+      ) else (
+      timeout /t %shutdownTimer% /nobreak
+      :: Replace timeout with shutdown /r /t %shutdownTimer%)
+    goto :endScript
