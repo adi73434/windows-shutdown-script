@@ -130,6 +130,7 @@ GOTO:eof
   ECHO [6] Start CMD as System.
   ECHO [7] To Clear Event Logs.
   ECHO [8] Spin down drives.
+  ECHO [9] Ping.
   ECHO [\q] To Quit.
   SET userInput=
   SET /P userInput=Type input: %=%
@@ -146,6 +147,7 @@ GOTO :101
     IF /I "%userInput%"=="6" GOTO 161 REM PSExec Elevate To System
     IF /I "%userInput%"=="7" GOTO 171 REM Clear all event logs
     IF /I "%userInput%"=="8" GOTO 181 REM Spin down HDD (temp)
+    IF /I "%userInput%"=="9" GOTO 191 REM Ping file/console
   GOTO 101
 
 
@@ -651,6 +653,100 @@ GOTO :171
     GOTO :101
   )
 GOTO :181
+
+
+
+
+
+
+
+
+:191 REM Ping file and console
+  SET currentLoop=191
+  CLS
+  ECHO Do you want to log pings to console or file?
+  ECHO.
+  ECHO [1] Console
+  ECHO [Z] File
+  ECHO [\z] To Go Back.
+  ECHO [\q] To Quit.
+
+  SET userInput=
+  SET /P userInput=Type input: %=%
+  CALL :commandInputParser
+
+  IF /I "%userInput%"=="1" (
+    SET pingMode=console
+    GOTO :192
+  )
+  IF /I "%userInput%"=="2" (
+    SET pingMode=file
+    GOTO :192
+  )
+GOTO :181
+
+
+:192
+    SET currentLoop=192
+    CLS
+    ECHO [Enter] for defaults
+    ECHO.
+    ECHO Set Ping Address:
+    SET "pingAddress="
+    SET /P pingAddress=
+    IF not DEFINED pingAddress SET "pingAddress=1.1.1.1"
+    CLS
+
+    ECHO [Enter] for defaults
+    ECHO.
+    ECHO Set Ping Size (Bytes):
+    SET "pingSize="
+    SET /P pingSize=
+    IF not DEFINED pingSize SET "pingSize=32"
+    CLS
+
+    ECHO [Enter] for defaults
+    ECHO.
+    ECHO Set Ping Count:
+    SET "pingCount="
+    SET /P pingCount=
+    CLS
+
+
+    IF "%pingMode%"=="console" (
+
+      IF not DEFINED pingCount (goto :192pingEndless) else (goto :192pingConsoleIterated)
+
+
+      GOTO :101
+    )
+
+    IF "%pingMode%"=="file" (
+
+      ECHO [Enter] for defaults
+      ECHO.
+      ECHO Set Save Filename:
+      SET "fileName="
+      SET /P fileName=
+
+      IF not DEFINED pingCount (goto :192pingEndless) else (goto :192pingFileIterated)
+
+      :192pingIterated
+        ping -t %pingAddress% -l %pingSize%|cmd /q /v /c "(pause&pause)>nul & for /l %%a in (1, 1, %pingCount%) do (set /p "data=" && echo(!date! %tab% !time! %tab% !data! )&ping -n 2 localhost>nul" >> %fileName%.txt
+      exit
+
+      :192pingEndless
+        ping -t %pingAddress% -l %pingSize%|cmd /q /v /c "(pause&pause)>nul & for /l %%a in () do (set /p "data=" && echo(!date! %tab% !time! %tab% !data! )&ping -n 2 localhost>nul" >> %fileName%.txt
+      exit
+
+      ping -t %pingAddress% -l %pingSize%|cmd /q /v /c "(pause&pause)>nul & for /l %%a in () do (set /p "data=" && echo(!time! !data!)&ping -n 2 localhost>nul"
+      
+      IF not DEFINED fileName SET "fileName=AiMirai-%~n0-%pingAddress%"
+      CLS
+      
+      GOTO :101
+    )
+
 
 
 

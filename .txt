@@ -1,0 +1,3 @@
+2020-10-01  22:08:14.72  Pinging 8.8.8.8 with 69 bytes of data: 
+2020-10-01  22:08:15.75  Reply from 8.8.8.8: bytes=68 (sent 69) time=18ms TTL=116 
+2020-10-01  22:08:16.78  Reply from 8.8.8.8:  
