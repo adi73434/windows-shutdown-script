@@ -1,0 +1,26 @@
+powershell -Command "Start-Process powershell \"-ExecutionPolicy Bypass -NoProfile -NoExit -Command `explorer.exe`\"`\"\" -Verb RunAs"
+
+
+
+powershell -Command "Start-Process powershell \"-ExecutionPolicy Bypass -NoProfile -NoExit -Command `explorer.exe`\"\" -Verb RunAs"
+
+
+
+powershell -Command "Start-Process powershell \"-Command `\"cmd.exe`\"\" -Verb RunAs"
+
+
+
+
+
+
+
+
+
+ACTUAL
+
+
+
+
+powershell -Command "Start-Process powershell \"-ExecutionPolicy Bypass -NoProfile -NoExit -Command `\"explorer.exe`\"\" -Verb RunAs"
+
+powershell -Command "Start-Process powershell \"-ExecutionPolicy Bypass -NoProfile -NoExit -Command `\"cd C:\PSTools\; .\psexec.exe -s cmd.exe /k "%psExecDrive%"`\"\" -Verb RunAs"
