@@ -688,35 +688,54 @@ GOTO :181
 
 :192
     SET currentLoop=192
+
     CLS
-    ECHO [Enter] for defaults
-    ECHO.
     ECHO Set Ping Address:
-    SET "pingAddress="
-    SET /P pingAddress=
+    ECHO.
+    ECHO [Enter] for defaults
+    ECHO [\z] To Go Back.
+    ECHO [\q] To Quit.
+
+    SET userInput=
+    SET /P userInput=Type input: %=%
+    CALL :commandInputParser
+    SET pingAddress=%userInput%
+
     IF not DEFINED pingAddress SET "pingAddress=1.1.1.1"
     CLS
 
-    ECHO [Enter] for defaults
-    ECHO.
-    ECHO Set Ping Size (Bytes):
-    SET "pingSize="
-    SET /P pingSize=
-    IF not DEFINED pingSize SET "pingSize=32"
-    CLS
 
-    ECHO [Enter] for defaults
+    ECHO Set Ping Size (Bytes):
     ECHO.
+    ECHO [Enter] for defaults
+    ECHO [\z] To Go Back.
+    ECHO [\q] To Quit.
+
+    SET userInput=
+    SET /P userInput=Type input: %=%
+    CALL :commandInputParser
+    SET pingSize=%userInput%
+
+    IF not DEFINED pingSize SET "pingSize=32"
+
+
+    CLS
     ECHO Set Ping Count:
-    SET "pingCount="
-    SET /P pingCount=
+    ECHO.
+    ECHO [Enter] for defaults
+    ECHO [\z] To Go Back.
+    ECHO [\q] To Quit.
+    SET userInput=
+    SET /P userInput=Type input: %=%
+    CALL :commandInputParser
+    SET pingCount=%userInput%
+    
     CLS
 
 
     IF "%pingMode%"=="console" (
 
-      IF not DEFINED pingCount (goto :192pingEndless) else (goto :192pingConsoleIterated)
-
+      IF not DEFINED pingCount (goto :193pingEndless) else (goto :193pingConsoleIterated)
 
       GOTO :101
     )
@@ -726,31 +745,40 @@ GOTO :181
       ECHO [Enter] for defaults
       ECHO.
       ECHO Set Save Filename:
-      SET "fileName="
+      SET fileName=
       SET /P fileName=
+      CALL :commandInputParser
 
-      IF not DEFINED pingCount (goto :192pingEndless) else (goto :192pingFileIterated)
-
-      :192pingIterated
-        ping -t %pingAddress% -l %pingSize%|cmd /q /v /c "(pause&pause)>nul & for /l %%a in (1, 1, %pingCount%) do (set /p "data=" && echo(!date! %tab% !time! %tab% !data! )&ping -n 2 localhost>nul" >> %fileName%.txt
-      exit
-
-      :192pingEndless
-        ping -t %pingAddress% -l %pingSize%|cmd /q /v /c "(pause&pause)>nul & for /l %%a in () do (set /p "data=" && echo(!date! %tab% !time! %tab% !data! )&ping -n 2 localhost>nul" >> %fileName%.txt
-      exit
-
-      ping -t %pingAddress% -l %pingSize%|cmd /q /v /c "(pause&pause)>nul & for /l %%a in () do (set /p "data=" && echo(!time! !data!)&ping -n 2 localhost>nul"
-      
       IF not DEFINED fileName SET "fileName=AiMirai-%~n0-%pingAddress%"
+
+      IF not DEFINED pingCount (goto :193pingEndless) else (goto :193pingFileIterated)
+
       CLS
       
       GOTO :101
     )
 
 
+REM ----------------------------------------------------------------------------
+REM NOTE: Have to get a way to escape these loops and auto-cacnel the iterated ones and go back into script
+REM ----------------------------------------------------------------------------
 
+:193pingConsoleIterated
+  ping -t %pingAddress% -l %pingSize%|cmd /q /v /c "(pause&pause)>nul & for /l %%a in (1, 1, %pingCount%) do (set /p "data=" && echo(!date! %tab% !time! %tab% !data! )&ping -n 2 localhost>nul"
+exit
 
+:193pingConsoleEndless
+  ping -t %pingAddress% -l %pingSize%|cmd /q /v /c "(pause&pause)>nul & for /l %%a in () do (set /p "data=" && echo(!time! !data!)&ping -n 2 localhost>nul"
+exit
 
+:193pingFileIterated
+  ping -t %pingAddress% -l %pingSize%|cmd /q /v /c "(pause&pause)>nul & for /l %%a in (1, 1, %pingCount%) do (set /p "data=" && echo(!date! %tab% !time! %tab% !data! )&ping -n 2 localhost>nul" >> %fileName%.txt
+exit
+
+:193pingFileEndless
+  ping -t %pingAddress% -l %pingSize%|cmd /q /v /c "(pause&pause)>nul & for /l %%a in () do (set /p "data=" && echo(!date! %tab% !time! %tab% !data! )&ping -n 2 localhost>nul" >> %fileName%.txt
+exit
+    
 
 
 
