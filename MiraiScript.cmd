@@ -39,10 +39,23 @@ REM Documentation
 REM ----------------------------------------------------------------------------
 
 
+    REM ------------------------------------------------------------------------
+    REM Variables
+    REM ------------------------------------------------------------------------
+    REM camelCase
+    REM ------------------------------------------------------------------------
+    REM Main Variables:
+    REM ------------------------------------------------------------------------
+    REM currentFunction: defines the "parent" function that will be returned to on bad user entry
+    REM nextFunction: defines the next function to be called if command_numerical_check is successful
+    REM ------------------------------------------------------------------------
+
+
     REM "Namespaces"
     REM ------------------------------------------------------------------------
+    REM PascalCase
+    REM ------------------------------------------------------------------------
     REM All functions are to be located within a namespace
-    REM 
     REM ------------------------------------------------------------------------
     REM Namespace names:
     REM ------------------------------------------------------------------------
@@ -61,15 +74,23 @@ REM ----------------------------------------------------------------------------
 
     REM "Functions"
     REM ------------------------------------------------------------------------
-    REM 
-    REM 
+    REM snake_case
     REM ------------------------------------------------------------------------
+    REM Main Functions:
+    REM ------------------------------------------------------------------------
+    REM command_numerical_check: check if user entered a number on option choice
+    REM command_general_check: check if user entered a general command
+    REM command_confirm_request: get user to confirm the request they made
+    REM command_confirm_request_handler: check user confirmed in proper way depending on strictness
+    REM ------------------------------------------------------------------------
+
+
 REM ----------------------------------------------------------------------------
 
 
 
 
-:command_general_request_handle
+:command_confirm_request_handler
     REM IF the cnfrmMode is easy and user enters nothing, go to userReq
     IF "%cnfrmMode%"=="easy" (
         IF "%userInput%"=="" (
@@ -79,8 +100,8 @@ REM ----------------------------------------------------------------------------
 
     REM IF the cnfrmMode is normal and user enters \cnfrm, go to userReq
     IF "%cnfrmMode%"=="norm" (
-    IF "%userInput%"=="\cnfrm" (
-        GOTO %userReq%
+        IF "%userInput%"=="\cnfrm" (
+            GOTO %userReq%
         )
     )
 
@@ -95,7 +116,7 @@ REM ----------------------------------------------------------------------------
 
 
 
-:command_general_request
+:command_confirm_request
     CLS
     ECHO [%userReqWordy%] Request
     ECHO.
@@ -114,7 +135,7 @@ REM ----------------------------------------------------------------------------
        SET userInput=
        SET cnfrmMode=easy
        SET /P userInput=Type input:
-       GOTO command_general_request_handle
+       GOTO command_confirm_request_handler
 
     ) ELSE (
        REM Normal comfirm in the case of any other command
@@ -127,10 +148,10 @@ REM ----------------------------------------------------------------------------
        SET cnfrmMode=norm
        REM use norm for future-proofing of very consequential commands using "hard"
        SET /P userInput=Type input:
-       GOTO command_general_request_handle
+       GOTO command_confirm_request_handler
 
     )
-GOTO :command_general_request
+GOTO :command_confirm_request
 
 
 
@@ -139,44 +160,47 @@ GOTO :command_general_request
         SET userReq=\q
         SET userReqL=\quit
         SET userReqWordy=Quit
-        GOTO command_general_request
+        GOTO command_confirm_request
     )
     IF "%userInput%"=="\quit" (
         SET userReq=\q
         SET userReqL=\quit
         SET userReqWordy=Quit
-        GOTO command_general_request
+        GOTO command_confirm_request
     )
 
     IF "%userInput%"=="\fq" (
         SET userReq=\fq
         SET userReqL=\forcequit
         SET userReqWordy=Force Quit
-        GOTO command_general_request
+        GOTO command_confirm_request
     )
     IF "%userInput%"=="\forcequit" (
         SET userReq=\fq
         SET userReqL=\forcequit
         SET userReqWordy=Force Quit
-        GOTO command_general_request
+        GOTO command_confirm_request
     )
 
     IF "%userInput%"=="\z" (
         SET userReq=\z
         SET userReqL=\back
         SET userReqWordy=Back
-        GOTO command_general_request
+        GOTO command_confirm_request
     )
     IF "%userInput%"=="\back" (
         SET userReq=\z
         SET userReqL=\back
         SET userReqWordy=Back
-        GOTO command_general_request
+        GOTO command_confirm_request
     )
 GOTO :eof
 
 
-:parse_command_numerical
+:command_numerical_check
+REM ----------------------------------------------------------------------------
+REM NOTE: I think this is a redundant check at this point
+REM ----------------------------------------------------------------------------
     REM This block checks IF the userInput was numerical, IF invalid goes to currentFunction, IF valid then allows to go to nextFunction
     SET "var="&for /f "delims=0123456789" %%i in ("%userInput%") do SET var=%%i
     pause
@@ -206,7 +230,7 @@ GOTO :eof
     SET /P userInput=Type input: %=%
     CALL :command_general_check
     SET nextFunction=102
-    GOTO :parse_command_numerical
+    GOTO :command_numerical_check
 GOTO :101
 
     :102 REM Initial Loop Stage 2
@@ -253,7 +277,7 @@ GOTO :101
     SET userInput=
     SET /P userInput=Type input: %=%
     CALL :command_general_check
-    GOTO :parse_command_numerical
+    GOTO :command_numerical_check
     REM Next loop: 112
     PAUSE
     GOTO :101
@@ -357,7 +381,7 @@ GOTO :101
     SET userInput=
     SET /P userInput=Type input: %=%
     CALL :command_general_check
-    GOTO :parse_command_numerical
+    GOTO :command_numerical_check
 GOTO :101
 
     :122 REM Power Options Stage 2
@@ -431,7 +455,7 @@ GOTO :101
     SET userInput=
     SET /P userInput=Type input: %=%
     CALL :command_general_check
-    GOTO :parse_command_numerical
+    GOTO :command_numerical_check
 GOTO :131
 
     :132 REM Power Options Stage 2
@@ -467,7 +491,7 @@ GOTO :131
         ECHO.
         SET userInput=
         SET /P userInput=Type input: %=%
-        GOTO parse_command_numerical
+        GOTO command_numerical_check
     GOTO 133
 
         :134
@@ -505,7 +529,7 @@ GOTO :131
     SET userInput=
     SET /P userInput=Type input: %=%
     CALL :command_general_check
-    GOTO :parse_command_numerical
+    GOTO :command_numerical_check
 GOTO 101
 
 :142 REM Power Plan Stage 2
