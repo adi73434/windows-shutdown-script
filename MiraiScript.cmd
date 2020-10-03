@@ -403,7 +403,7 @@ ECHO but as I'm also learning Sciter for C++, I'd like to see if I can use that.
 ECHO but using Qt or wxWidgets also interests me.
 ECHO I'm generally busy/unmotivated though
 ECHO and don't want to use the motivation and productive-time I have for this
-ECHO so it's probably a temporary ????
+ECHO so it's probably a temporary さよなら
 ECHO.
 ECHO.
 PAUSE
@@ -1115,9 +1115,13 @@ Endlocal & Set "%3=%Ret%" & Goto :Eof
 
 
 
+
+
 REM ----------------------------------------------------------------------------
 REM Exit functionality
 REM ----------------------------------------------------------------------------
+
+
 
 
 
