@@ -1071,7 +1071,8 @@ GOTO :main
 
 REM ----------------------------------------------------------------------------
 REM Decimal and Binary conversion general functions
-REM [https://stackoverflow.com/questions/46254352/decimal-to-hexadecimal-binary-converter-batch-program-any-suggestions-how-to]
+REM From: [https://stackoverflow.com/questions/46254352/decimal-to-hexadecimal-binary-converter-batch-program-any-suggestions-how-to]
+REM Also look at: https://www.robvanderwoude.com/sourcecode.php?src=bin2dec_nt
 REM ----------------------------------------------------------------------------
 
 
