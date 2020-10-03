@@ -25,6 +25,13 @@ Windows Batch script for some minor, and rather useless, utility
 - I want a language that doesn't feel like I'm writing on a whiteboard -- smudging over everything, only being able to draw simple arrows of "do this now" instead of using actual functions, and being impossible to expand functionality without making a mess in one file.
 - Why KISS when you can C++
 
+## Maybe Python?
+- All the hip
+- Actually flexible and quick to write
+- Makes actual sense
+- Haven't researched GUIs
+- Suited to scripting
+
 ## C#/C++ plan
 - GUI
 - Write the code with the presumption that I will copypasta it into something else
