@@ -203,10 +203,8 @@ IF "%userInput%"=="\back" (
 GOTO :eof
 
 
+REM GOTO to this to evaluate input and go to next specified function if number was input. Goes to currentFunction if a non-numerical input was provided
 :command_numerical_check
-REM ----------------------------------------------------------------------------
-REM NOTE: I think this is a redundant check at this point
-REM ----------------------------------------------------------------------------
 REM This block checks IF the userInput was numerical, IF invalid goes to currentFunction, IF valid then allows to go to nextFunction
 SET "var="&for /f "delims=0123456789" %%i in ("%userInput%") do SET var=%%i
 IF defined var (
@@ -214,6 +212,16 @@ IF defined var (
     GOTO %currentFunction%
 )
 GOTO %nextFunction%
+
+REM CALL this function to evaluate input and continue execution if number was input. Goes to currentFunction if a non-numerical input was provided
+:command_numerical_check_inline
+REM This block checks IF the userInput was numerical, IF invalid goes to currentFunction, IF valid then allows to go to nextFunction
+SET "var="&for /f "delims=0123456789" %%i in ("%userInput%") do SET var=%%i
+IF defined var (
+    CLS
+    GOTO %currentFunction%
+)
+GOTO :eof
 
 
 
@@ -237,6 +245,7 @@ ECHO [6] Start CMD as System.
 ECHO [7] To Clear Event Logs.
 ECHO [8] Spin down drives.
 ECHO [9] Ping.
+ECHO [10] Binary and Decimal converter
 ECHO [\q] To Quit.
 SET userInput=
 SET /P userInput=Type input: %=%
@@ -255,6 +264,8 @@ IF /I "%userInput%"=="6" GOTO :CmdAsSystem_main
 IF /I "%userInput%"=="7" GOTO :ClearEventLog_main
 IF /I "%userInput%"=="8" GOTO :HddSpinDown_main
 IF /I "%userInput%"=="9" GOTO :NetworkPing_main
+IF /I "%userInput%"=="10" GOTO :BaseDecConvert_main
+
 GOTO :main
 
 
@@ -363,31 +374,110 @@ REM ----------------------------------------------------------------------------
 
 
 
+REM ----------------------------------------------------------------------------
 :AffinityAlloc_main
-SET currentFunction=AffinityAlloc
 CLS
-ECHO Chose an option (Zen 8C16T only)
+ECHO I was going to have the "anycpu" option take the available number of threads
+ECHO and in a very dumb way, just convert them to base2 and invoke the powershell
+ECHO script that I've made \windows-affinity\processor-nihil-ad-rem\clean-game-threads.ps1
+ECHO with two parameters: the game the user is playing, and the number of threads
+ECHO However, as per
 ECHO.
-ECHO [1] All 16 Threads Default.
-ECHO [2] Windows First CXX, Firefox Second CCX
-ECHO [3] All Processes First CCX
-ECHO [4] All Processes Second CCX
-ECHO [5] Debloat first 15 Threads (Predetermined processes on last thread)
-ECHO [6] Debloat refresh
-ECHO [\z] To Go Back.
-ECHO [\q] To Quit.
-SET userInput=
-SET /P userInput=Type input: %=%
-CALL :command_general_check
-SET nextFunction=AffinityAlloc_main_option_selection
-GOTO :command_numerical_check
+ECHO powershell -Command "Start-Process powershell \"-ExecutionPolicy Bypass -NoProfile -Command `\"cd \`\"%scriptFolderPath%\`\"; & \`\".\%pscriptname%\`\"`\"\" -Verb RunAs"
+ECHO.
+ECHO in function AffinityAlloc_run_powershell_file 
+ECHO I have realised the grave mistake of using batch instead of PowerShell
+ECHO and I do not wish to look at that one line that invokes PowerShell as admin,
+ECHO and try to pass parameters to it
+ECHO so I give up.
+ECHO I will not implement the affinity allocation
+ECHO.
+ECHO.
+PAUSE
+CLS
+ECHO This feature, and probably many others, await my reincarnation as a C++, C#, Python, or even PowerShell developer.
+ECHO I would like to rewrite this in C++, or C#.
+ECHO I could use PowerShell, but if I'm to rewrite I'd want a GUI and I want to learn C++
+ECHO and C# is probably a strong language with all the Microsoft .NET stuff - ASP, GUIs, UWPs
+ECHO but as I'm also learning Sciter for C++, I'd like to see if I can use that.
+ECHO but using Qt or wxWidgets also interests me.
+ECHO I'm generally busy/unmotivated though
+ECHO and don't want to use the motivation and productive-time I have for this
+ECHO so it's probably a temporary さよなら
+ECHO.
+ECHO.
+PAUSE
+GOTO :main
+
+rem SET currentFunction=AffinityAlloc
+rem CLS
+rem ECHO Chose an option
+rem ECHO.
+rem ECHO [1] Any CPU (nihil-ad-rem)
+rem ECHO [2] Zen and Zen+ 8Core/16Thread
+rem ECHO [3] 
+rem ECHO [\z] To Go Back.
+rem ECHO [\q] To Quit.
+rem SET userInput=
+rem SET /P userInput=Type input: %=%
+rem CALL :command_general_check
+rem SET nextFunction=AffinityAlloc_main_option_selection
+rem GOTO :command_numerical_check
 
 :AffinityAlloc_main_option_selection
+IF /I "%userInput%"=="1" (
+    GOTO :AffinityAlloc_anycpu_main
+)
+IF /I "%userInput%"=="1" (
+    GOTO :AffinityAlloc_zen16t_main
+)
+
+REM ----------------------------------------------------------------------------
+REM AffinityAlloc anycpu
+REM ----------------------------------------------------------------------------
+:AffinityAlloc_anycpu_main
+CLS
+ECHO Chose an option
+ECHO.
+ECHO [1] Default all threads
+ECHO [2] Clean game threads
+ECHO [\z] To Go Back.
+ECHO [\q] To Quit.
+CALL :command_general_check
+SET nextFunction=AffinityAlloc_anycpu_option_selection
+GOTO :command_numerical_check
+
+:AffinityAlloc_anycpu_option_selection
+IF /I "%userInput%"=="1" (
+    GOTO :AffinityAlloc_anycpu_default
+)
+IF /I "%userInput%"=="1" (
+    GOTO :AffinityAlloc_anycpu_clean_game_threads
+)
+GOTO :AffinityAlloc_anycpu_option_selection
+
+REM ----------------------------------------------------------------------------
+REM AffinityAlloc zen16t - existing PowerShell scripts for Zen/Zen+ 8C/16T CPUs
+REM ----------------------------------------------------------------------------
+
+:AffinityAlloc_zen16t_main
+CLS
+ECHO Chose an option
+ECHO.
+ECHO [1] Default all threads
+ECHO [2] Clean game threads
+ECHO [3] 
+ECHO [\z] To Go Back.
+ECHO [\q] To Quit.
+CALL :command_general_check
+SET nextFunction=AffinityAlloc_zen16t_option_selection
+GOTO :command_numerical_check
+
+:AffinityAlloc_zen16t_option_selection
 IF /I "%userInput%"=="1" (
     SET pscriptname=Global All Affinity Default.ps1
     GOTO :AffinityAlloc_run_powershell_file
 )
-IF /I "%userInput%"=="2" (
     SET pscriptname=Windows+Firefox 8T-16T.ps1
     GOTO :AffinityAlloc_run_powershell_file
 )
@@ -407,7 +497,7 @@ IF /I "%userInput%"=="6" (
     SET pscriptname=bloat last 2 Threads.ps1
     GOTO :AffinityAlloc_run_powershell_file
 )
-GOTO :AffinityAlloc_main_option_selection
+GOTO :AffinityAlloc_zen16t_option_selection
 
 REM https://stackoverflow.com/questions/7690994/running-a-command-as-administrator-using-powershell
 REM Windows Firefox Affinity 16T dumboption
@@ -425,9 +515,13 @@ GOTO :main
 
 
 
+
+
 REM ----------------------------------------------------------------------------
 REM PowerOptions
 REM ----------------------------------------------------------------------------
+
+
 
 
 
@@ -500,9 +594,13 @@ GOTO :main
 
 
 
+
+
 REM ----------------------------------------------------------------------------
 REM PowerPlan
 REM ----------------------------------------------------------------------------
+
+
 
 
 
@@ -589,9 +687,13 @@ GOTO :PowerPlan_select_plan
 
 
 
+
+
 REM ----------------------------------------------------------------------------
 REM ProcessKill
 REM ----------------------------------------------------------------------------
+
+
 
 
 
@@ -609,10 +711,10 @@ ECHO [\q] To Quit.
 SET userInput=
 SET /P userInput=Type input: %=%
 CALL :command_general_check
-SET nextFunction=ProcessKill_mode_selection
+SET nextFunction=ProcessKill_option_selection
 GOTO :command_numerical_check
 
-:ProcessKill_mode_selection
+:ProcessKill_option_selection
 IF /I "%userInput%"=="1" (
     SET processRestart=n
     SET processMode=Kill
@@ -637,7 +739,7 @@ IF /I "%userInput%"=="4" (
     SET processCommand=/f /im
     GOTO :ProcessKill_process_selection
 )
-GOTO :ProcessKill_mode_selection
+GOTO :ProcessKill_option_selection
 
 :ProcessKill_process_selection
 SET currentFunction=ProcessKill_process_selection
@@ -660,9 +762,13 @@ GOTO :ProcessKill_process_selection
 
 
 
+
+
 REM ----------------------------------------------------------------------------
 REM CmdAsSystem
 REM ----------------------------------------------------------------------------
+
+
 
 
 
@@ -715,9 +821,13 @@ GOTO :main
 
 
 
+
+
 REM ----------------------------------------------------------------------------
 REM HddSpinDown
 REM ----------------------------------------------------------------------------
+
+
 
 
 
@@ -745,9 +855,13 @@ GOTO :HddSpinDown_main
 
 
 
+
+
 REM ----------------------------------------------------------------------------
 REM NetworkPing
 REM ----------------------------------------------------------------------------
+
+
 
 
 
@@ -849,9 +963,165 @@ exit
 
 
 
+
+
 REM ----------------------------------------------------------------------------
-REM 
+REM BaseDecConvert
 REM ----------------------------------------------------------------------------
+
+
+
+
+
+:BaseDecConvert_main
+SET currentFunction=BaseDecConvert_main
+CLS
+ECHO Convert from Base or Decimal
+ECHO.
+ECHO [1] Base to Decimal
+ECHO [2] Decmial to Base
+ECHO [\z] To Go Back.
+ECHO [\q] To Quit.
+SET userInput=
+SET /P userInput=Type input: %=%
+CALL :command_general_check
+SET nextFunction=BaseDecConvert_option_selection
+GOTO :command_numerical_check
+
+:BaseDecConvert_option_selection
+IF /I "%userInput%"=="1" (
+    GOTO :BaseDecConvert_basetodec_main
+)
+IF /I "%userInput%"=="2" (
+    GOTO :BaseDecConvert_dectobase_main
+)
+GOTO :BaseDecConvert_option_selection
+
+:BaseDecConvert_dectobase_main
+SET currentFunction=BaseDecConvert_dectobase_main
+REM ----------------------------------------------------------------------------
+REM toBase
+REM ----------------------------------------------------------------------------
+CLS
+ECHO Enter base to convert to
+ECHO.
+ECHO [\z] To Go Back.
+ECHO [\q] To Quit.
+SET userInput=
+SET /P userInput=Type input: %=%
+CALL :command_numerical_check_inline
+SET /A toBase=%userInput%
+REM ----------------------------------------------------------------------------
+REM DecIn
+REM ----------------------------------------------------------------------------
+CLS
+ECHO Enter decimal number to convert from
+ECHO.
+ECHO [\z] To Go Back.
+ECHO [\q] To Quit.
+SET userInput=
+SET /P userInput=Type input: %=%
+CALL :command_numerical_check_inline
+SET /A fromDecimalNumber=%userInput%
+CALL :convert_base_to_dec %toBase% %fromDecimalNumber% baseNumberOutput
+CLS
+ECHO Number %fromDecimalNumber% in base %toBase%: %baseNumberOutput%
+ECHO.
+PAUSE
+GOTO :main
+
+
+
+:BaseDecConvert_basetodec_main
+SET currentFunction=BaseDecConvert_basetodec_main
+REM ----------------------------------------------------------------------------
+REM fromBase
+REM ----------------------------------------------------------------------------
+CLS
+ECHO Enter base to convert from
+ECHO.
+ECHO [\z] To Go Back.
+ECHO [\q] To Quit.
+SET userInput=
+SET /P userInput=Type input: %=%
+CALL :command_numerical_check_inline
+SET /A fromBase=%userInput%
+REM ----------------------------------------------------------------------------
+REM fromBaseNumber
+REM ----------------------------------------------------------------------------
+CLS
+ECHO Enter base number to convert from
+ECHO.
+ECHO [\z] To Go Back.
+ECHO [\q] To Quit.
+SET userInput=
+SET /P userInput=Type input: %=%
+CALL :command_numerical_check_inline
+SET /A fromBaseNumber=%userInput%
+CALL :convert_base_to_dec %fromBase% %fromBaseNumber% decimalNumberOutput
+CLS
+ECHO Base %fromBase% number: %fromBaseNumber% in decimal: %decimalNumberOutput%
+ECHO.
+PAUSE
+GOTO :main
+
+
+
+
+
+REM ----------------------------------------------------------------------------
+REM Decimal and Binary conversion general functions
+REM [https://stackoverflow.com/questions/46254352/decimal-to-hexadecimal-binary-converter-batch-program-any-suggestions-how-to]
+REM ----------------------------------------------------------------------------
+
+
+
+
+
+REM Base = what base to convert to; DecIn = Decimal number input; BaseOut = base output
+:convert_dec_to_base Base DecIn BaseOut
+Setlocal
+Echo:%2|findstr /i "^[%map:~0,10%]*$" >Nul 2>&1 ||(Echo invalid char for base 10&Goto :Eof)
+set /a Num=%2
+set "Ret="
+
+:convert_dec_to_base_loop
+set /a "Digit=Num %% %1"
+set /a "Num /= %1"
+set Ret=!map:~%Digit%,1!%Ret%
+if "%Num%" neq "0" goto :convert_dec_to_base_loop
+Endlocal&Set "%3=%Ret%"&Goto :Eof
+REM ----------------------------------------------------------------------------
+
+
+REM Base = what base to convert from; BaseIn = Base number input; DecBack = decimal output
+:convert_base_to_dec Base BaseIn DecBack
+Setlocal EnableDelayedExpansion
+Set /A "Base=%1,PlaceVal=1,Ret=0"
+Echo:%2|findstr /i "^[!map:,%Base%!]*$" >Nul 2>&1 ||(Echo invalid char for base %1&Goto :Eof)
+Set Val=%2
+
+:convert_base_to_dec_loop
+Set "Digit=%Val:~-1%"
+If %Digit% Leq 9 goto :convert_base_to_dec_loop1
+For /L %%i in (10,1,%Base%) Do If /i "!Digit!" Equ "!map:~%%i,1!" (Set "Digit=%%i" & Goto :convert_base_to_dec_loop1 )
+Echo Something went wrong & Pause
+
+:convert_base_to_dec_loop1
+set /A "Ret+=Digit * PlaceVal,PlaceVal *= Base"
+Set "Val=%Val:~0,-1%"
+If defined Val goto :convert_base_to_dec_loop
+Endlocal & Set "%3=%Ret%" & Goto :Eof
+
+
+
+
+
+REM ----------------------------------------------------------------------------
+REM Exit functionality
+REM ----------------------------------------------------------------------------
+
+
 
 
 
